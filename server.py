@@ -2,11 +2,13 @@ import os
 import json
 import datetime
 from subprocess import call
+from functools import wraps
 
-from flask import Flask
-from flask import request
+from flask import Flask, request, render_template, session, redirect, url_for
+from flask_login import  UserMixin, login_required, LoginManager
 
 from sql.db_connect import Connect
+from passlib.apps import custom_app_context as pwd_context
 
 
 with open(os.path.expanduser('~/.config/electron/config.json'), 'r') as cfg:
@@ -15,20 +17,57 @@ with open(os.path.expanduser('~/.config/electron/config.json'), 'r') as cfg:
 
 app = Flask(__name__)
 app.config.update(config)
+app.secret_key = app.config['secret_key']
 
 db = Connect(app.config['SQLALCHEMY_DATABASE_URI'])
 
 values_needed = ['event','coreid','data','published_at']
 
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = '/login'
 
 def alert():
     call(['echo','fuck'])
+
+def login_user(username, password):
+    
+    q = db.session.query(db.base.classes.users).filter(username == username).first()
+
+    if not q:
+        return False
+
+    if pwd_context.verify(password, q.password):
+        return True
+
+    return False
+
+
+
+def logged_in():
+    if 'logged_in' in session:
+        return session['logged_in']
+
+    return False
+
+
+def login_required(f):
+    @wraps(f)
+
+    def decorated_function(*args, **kwargs):
+
+        if logged_in():
+            return f(*args, **kwargs)
+
+        return render_template('not_authorized.html')
+
+    return decorated_function
 
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        print(request.values)
+        #print(request.values)
 
         # make sure everything is there
         for v in values_needed:
@@ -55,6 +94,45 @@ def index():
 
 
     return 'error'
+
+
+@app.route('/log', methods=['GET'])
+@login_required
+def log():
+    q = db.session.query(db.base.classes.events).all()
+
+
+    return render_template('log.html', q=q)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+
+    if request.method == 'GET':
+        return render_template('login.html')
+
+    if request.method == 'POST':
+
+        password = request.form.get('password')
+        username = request.form.get('username')
+
+        if not username:
+            return render_template('error.html', msg='no username given')
+
+        elif not password:
+            return render_template('error.html', msg='no password given')
+
+        result = login_user(username, password)
+
+        if not result:
+            return render_template('error.html', msg='unable to log you in')
+
+        else:
+            session['logged_in'] = True
+            return render_template('success.html', msg='successfully logged in')
+
+        
+
 
 if __name__ == '__main__':
     app.run(host=app.config['host'], port=app.config['port'], debug=app.config['debug'])

@@ -1,0 +1,17 @@
+
+<table>
+    <tr>
+        <th>Event Name</th>
+        <th>Data</th>
+        <th>Time</th>
+    </tr>
+        
+    {% for item in q %}
+    <tr>
+        <td> {{ item.name }} </td>
+        <td> {{ item.data }} </td>
+        <td> {{ item.published_at }} </td>
+    </tr>
+    {% endfor %}
+
+</table>

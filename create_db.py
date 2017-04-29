@@ -8,6 +8,7 @@ from sqlalchemy_utils.functions import database_exists, drop_database
 from sql import initialize_sql
 
 from sql.events import Event
+from sql.users   import User
 
 
 class CreateDB():
