@@ -64,8 +64,16 @@ def login_required(f):
     return decorated_function
 
 
+
 @app.route('/', methods=['GET', 'POST'])
+@login_required
 def index():
+
+    return render_template('index.html')
+
+
+@app.route('/post_data', methods=['GET', 'POST'])
+def post_data():
     if request.method == 'POST':
         #print(request.values)
 
@@ -132,6 +140,17 @@ def login():
             return render_template('success.html', msg='successfully logged in')
 
         
+@app.route('/logout', methods=['GET', 'POST'])
+def logout():
+
+    if session['logged_in'] == True:
+        session['logged_in'] = False
+        return render_template('success.html', msg='you have been logged out')
+
+    
+    return render_template('error.html', msg='you were not logged in')
+
+    
 
 
 if __name__ == '__main__':

@@ -1,13 +1,21 @@
-<form action="/login" method="post">
-    Username:
-    <br>
-    <input type="text" name="username" id="username">
-    <br>
-    Password:
-    <br>
-    <input type="password" name="password" id="password">
+{% include 'navigation.html' %}
 
-    <br>
-    <br>
-    <input type="submit" value="Login">
-</form>
+
+<html>
+    <div class="container">
+
+        <form action="/login" method="post">
+            Username:
+            <br>
+            <input type="text" name="username" id="username">
+            <br>
+            Password:
+            <br>
+            <input type="password" name="password" id="password">
+
+            <br>
+            <br>
+            <input type="submit" value="Login">
+        </form>
+    </div>
+</html>
