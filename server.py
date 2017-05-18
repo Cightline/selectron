@@ -112,6 +112,12 @@ def log():
 
     return render_template('log.html', q=q)
 
+@app.route('/controls', methods=['GET'])
+@login_required
+def controls():
+
+    return render_template('controls.html')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
