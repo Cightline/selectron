@@ -3,7 +3,6 @@
 
 
 <html>
-
     <div class="container">
         <table class="table table-striped">
             <tr>
@@ -18,7 +17,7 @@
                 <td> {{ item.name }} </td>
                 <td> {{ item.data }} </td>
                 <td> {{ item.coreid }} </td>
-                <td> {{ item.published_at }} </td>
+                <td> {{ item.published_at.strftime('%Y-%m-%d - %H:%M') }} </td>
             </tr>
             {% endfor %}
         </table>

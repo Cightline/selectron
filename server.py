@@ -59,7 +59,7 @@ def login_required(f):
         if logged_in():
             return f(*args, **kwargs)
 
-        return render_template('not_authorized.html')
+        return render_template('error.html', msg='You are not allowed here')
 
     return decorated_function
 
